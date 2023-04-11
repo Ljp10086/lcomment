@@ -11,6 +11,14 @@ export default defineConfig({
       formats: ['umd']
     }
   },
+  resolve: {
+    alias: [
+      {
+        find: '@',
+        replacement: './src'
+      }
+    ]
+  },
   plugins: [
     svelte({
       compilerOptions: {

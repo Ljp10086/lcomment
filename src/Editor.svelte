@@ -1,19 +1,41 @@
-<svelte:options tag="lcomment-editor"/>
+<svelte:options tag="lcomment-editor" accessors={true} />
 
 <script lang="ts">
+  import { onMount } from 'svelte';
   import GithubIcon from './assets/github.svg'
+  import GithubApi from './api-github';
 
-  export let clientId;
-  export let clientSecrets;
+  export let cid: string;
+  export let secret: string;
+  export let owner: string;
+  export let repo: string;
+
+  let githubApi: GithubApi;
+
+  onMount(() => {
+    console.log({
+      state:'lcomment',
+      owner: owner,
+      repo: repo,
+      clientId: cid,
+      clientSecret: secret
+    });
+
+    githubApi = new GithubApi({
+      state:'lcomment',
+      owner: owner,
+      repo: repo,
+      clientId: cid,
+      clientSecret: secret
+    });
+  })
 </script>
 
 <main class="lcomment">
   <div class="lcomment_header">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-missing-attribute -->
-    <a on:click={() => {
-      window.open(`https://github.com/login/oauth/authorize?state=Lcomment&allow_signup=true&client_id=${clientId}&redirect_uri=${encodeURIComponent('http://127.0.0.1:5173')}`, 'mozillaWindow')
-    }} class="lcomment_avatar">
+    <a on:click={githubApi.login} class="lcomment_avatar">
       <img src={GithubIcon} alt="fail load">
     </a>
     <div class="lcomment_header_editor">
@@ -53,6 +75,7 @@
 
         &_input {
           width: 100%;
+          min-height: 150px;
           padding: 0.5rem;
           border: none;
           background-color: transparent;
@@ -65,6 +88,12 @@
           &:focus, 
           &:hover {
             background-color: var(--lcomment-editor-input-hover);
+          }
+
+          &:disabled {
+            pointer-events: none;
+            background-color: var(--lcomment-editor-input-hover);
+            cursor: not-allowed;
           }
         }
       }
